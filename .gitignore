@@ -1,0 +1,127 @@
+# ==============================================================
+# homelab-infra .gitignore
+# ==============================================================
+
+# --------------------------------------------------------------
+# Kubernetes access
+# kubeconfig files grant full admin access to the cluster
+# --------------------------------------------------------------
+kubeconfig
+kubeconfig*
+*.kubeconfig
+.kube/
+
+# k3s join token (copied from /var/lib/rancher/k3s/server/node-token)
+node-token
+*token*
+
+# --------------------------------------------------------------
+# Ansible
+# --------------------------------------------------------------
+# Failed-run retry files
+*.retry
+
+# Vault password files (vault-encrypted files themselves are fine to commit)
+.vault_pass*
+vault_pass*
+.vault-password*
+
+# Local logs and fact cache
+ansible.log
+.ansible/
+fact_cache/
+
+# Roles/collections downloaded from Ansible Galaxy (reinstall from requirements.yml)
+galaxy_roles/
+collections/ansible_collections/
+
+# --------------------------------------------------------------
+# Secrets & keys
+# SOPS-encrypted files (*.sops.yaml) ARE safe to commit;
+# the age private key that decrypts them is NOT
+# --------------------------------------------------------------
+*.agekey
+age.key
+keys.txt
+
+# SSH and TLS private keys
+id_rsa*
+id_ed25519*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Environment / credential files (keep example templates)
+.env
+.env.*
+!.env.example
+*.secret
+*secrets*.yaml
+*secrets*.yml
+!*secrets*.sops.yaml
+!*secrets*.sops.yml
+
+# Cloud / API credentials
+.cloudflare*
+credentials*
+!credentials*.example
+
+# --------------------------------------------------------------
+# Python
+# --------------------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.python-version
+
+# --------------------------------------------------------------
+# Helm & downloaded artifacts
+# --------------------------------------------------------------
+# Packaged/downloaded charts
+*.tgz
+charts/*/charts/
+
+# Air-gap bundles, ISOs, and large downloads (rebuild, don't commit)
+*.iso
+*.img
+*.tar
+*.tar.gz
+*.tar.zst
+*.zip
+
+# --------------------------------------------------------------
+# Logs & temp files
+# --------------------------------------------------------------
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+tmp/
+temp/
+
+# --------------------------------------------------------------
+# Editor
+# --------------------------------------------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# --------------------------------------------------------------
+# macOS
+# --------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# --------------------------------------------------------------
+# Linux
+# --------------------------------------------------------------
+.directory
+.Trash-*
+.nfs*
