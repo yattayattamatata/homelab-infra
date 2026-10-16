@@ -5,13 +5,13 @@
 
   tasks:
     - name: Make sure andrewm is in sudo group.
-      user:
+      ansible.builtin.user:
         name: andrewm
         groups: sudo
         append: true
 
     - name: Give andrewm sudo without password.
-      copy:
+      ansible.builtin.copy:
         dest: /etc/sudoers.d/andrewm
         content: "andrewm ALL=(ALL) NOPASSWD:ALL\n"
         owner: root
@@ -20,12 +20,17 @@
         validate: visudo -cf %s
 
     - name: Install Chrony for time synchronization.
-      package:
+      ansible.builtin.package:
         name: chrony
         state: present
 
     - name: Ensure Chrony is running.
-      service:
+      ansible.builtin.service:
         name: chrony
         state: started
         enabled: true
+
+    - name: Change timezone and hardware clock to UTC.
+      community.general.timezone:
+        name: UTC
+        hwclock: UTC
