@@ -2,5 +2,8 @@
 # ansible-lint configuration for homelab-infra.
 # Read automatically by ansible-lint, both in the terminal and in VSCodium.
 
-# Rules to turn off for the whole repo.
-# skip_list:
+# Never download collections; use the ones Homebrew's Ansible provides.
+offline: true
+
+# Rules to turn off for the whole repo (none currently).
+skip_list: []

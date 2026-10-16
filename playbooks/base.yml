@@ -4,6 +4,7 @@
   become: true
 
   tasks:
+  # User Access
     - name: Make sure andrewm is in sudo group.
       ansible.builtin.user:
         name: andrewm
@@ -19,6 +20,7 @@
         mode: "0440"
         validate: visudo -cf %s
 
+  # Time
     - name: Install Chrony for time synchronization.
       ansible.builtin.package:
         name: chrony
@@ -34,3 +36,5 @@
       community.general.timezone:
         name: UTC
         hwclock: UTC
+
+  #
