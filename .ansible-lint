@@ -1,0 +1,9 @@
+---
+# ansible-lint configuration for homelab-infra.
+# Read automatically by ansible-lint, both in the terminal and in VSCodium.
+
+# Rules to turn off for the whole repo.
+skip_list:
+  # Allow short module names (copy, user, package, service) instead of the full form (ansible.builtin.copy, etc.).
+  # Short names are a deliberate style choice in this repo.
+  - fqcn[action-core]

@@ -1,0 +1,31 @@
+---
+- name: Base setup for all servers.
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Make sure andrewm is in sudo group.
+      user:
+        name: andrewm
+        groups: sudo
+        append: true
+
+    - name: Give andrewm sudo without password.
+      copy:
+        dest: /etc/sudoers.d/andrewm
+        content: "andrewm ALL=(ALL) NOPASSWD:ALL\n"
+        owner: root
+        group: root
+        mode: "0440"
+        validate: visudo -cf %s
+
+    - name: Install Chrony for time synchronization.
+      package:
+        name: chrony
+        state: present
+
+    - name: Ensure Chrony is running.
+      service:
+        name: chrony
+        state: started
+        enabled: true
