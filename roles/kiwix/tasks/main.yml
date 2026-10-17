@@ -1,0 +1,26 @@
+# Kiwix: Setup Kiwix folders, create compose file using template, and start.
+---
+
+- name: Create Kiwix compose and data folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: andrewm
+    group: andrewm
+    mode: "0755"
+  loop:
+    - /srv/appdata/kiwix
+    - /srv/storage/kiwix
+
+- name: Create Kiwix compose file.
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: /srv/appdata/kiwix/compose.yml
+    owner: andrewm
+    group: andrewm
+    mode: "0644"
+
+- name: Start Kiwix.
+  community.docker.docker_compose_v2:
+    project_src: /srv/appdata/kiwix
+    state: present

@@ -1,0 +1,27 @@
+# Jellyfin: Setup Jellyfin folders, create compose file using template, and start.
+---
+
+- name: Create Jellyfin compose, config, and cache folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: andrewm
+    group: andrewm
+    mode: "0755"
+  loop:
+    - /srv/appdata/jellyfin
+    - /srv/appdata/jellyfin/config
+    - /srv/appdata/jellyfin/cache
+
+- name: Create Jellyfin compose file.
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: /srv/appdata/jellyfin/compose.yml
+    owner: andrewm
+    group: andrewm
+    mode: "0644"
+
+- name: Start Jellyfin.
+  community.docker.docker_compose_v2:
+    project_src: /srv/appdata/jellyfin
+    state: present

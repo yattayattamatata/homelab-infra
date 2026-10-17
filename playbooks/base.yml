@@ -1,4 +1,5 @@
 ---
+
 - name: Base setup for all servers.
   hosts: debian
   become: true

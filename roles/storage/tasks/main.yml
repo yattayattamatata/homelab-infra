@@ -1,0 +1,49 @@
+# Storage: LVs on the 2TB SSD, data partition on the 4TB, filesystems, mounts, data folders.
+---
+
+- name: Create logical volumes on 2tb ssd.
+  community.general.lvol:
+    vg: "{{ item.vg }}"
+    lv: "{{ item.lv }}"
+    size: "{{ item.size }}"
+  loop:
+    - { vg: "{{ volume_group }}", lv: appdata, size: "{{ appdata_size }}" }
+    - { vg: "{{ volume_group }}", lv: storage, size: "{{ storage_size }}" }
+
+- name: Create partition on 4tb nvme.
+  community.general.parted:
+    device: "{{ media_path }}"
+    number: 1
+    state: present
+    label: gpt
+
+- name: Create filesystems on lvms and partitions.
+  community.general.filesystem:
+    dev: "{{ item.dev }}"
+    fstype: ext4
+    opts: "-L {{ item.label }} {{ item.reserve }}"
+  loop:
+    - { dev: "{{ media_part }}", label: data, reserve: "-m 0" }
+    - { dev: "/dev/{{ volume_group }}/appdata", label: appdata, reserve: "" }
+    - { dev: "/dev/{{ volume_group }}/storage", label: storage, reserve: "-m 0" }
+
+- name: Mount filesystems.
+  ansible.posix.mount:
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    fstype: ext4
+    opts: "{{ item.opts }}"
+    state: mounted
+  loop:
+    - { path: "{{ data_root }}", src: LABEL=data, opts: "defaults,nofail" }
+    - { path: /srv/appdata, src: LABEL=appdata, opts: defaults }
+    - { path: /srv/storage, src: LABEL=storage, opts: defaults }
+
+- name: Create data drive folder structure.
+  ansible.builtin.file:
+    path: "{{ data_root }}/{{ item }}"
+    state: directory
+    owner: andrewm
+    group: andrewm
+    mode: "0755"
+  loop: "{{ data_dirs }}"
