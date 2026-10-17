@@ -1,0 +1,51 @@
+---
+- name: Travel server configuration.
+  hosts: travel_servers
+  become: true
+  vars:
+    volume_group: travel-vg
+    appdata_size: 100g
+    storage_size: 1.5t
+    media_disk: VK25N28050903576
+    media_path: "/dev/disk/by-id/nvme-SPCC_M.2_PCIe_SSD_{{ media_disk }}"
+    media_part: "{{ media_path }}-part1"
+
+  tasks:
+    # Configure storage, create filesystems and mount.
+    - name: Create logical volumes on 2tb ssd.
+      community.general.lvol:
+        vg: "{{ item.vg }}"
+        lv: "{{ item.lv }}"
+        size: "{{ item.size }}"
+      loop:
+        - { vg: "{{ volume_group }}", lv: appdata, size: "{{ appdata_size }}" }
+        - { vg: "{{ volume_group }}", lv: storage, size: "{{ storage_size }}" }
+
+    - name: Create partition on 4tb nvme.
+      community.general.parted:
+        device: "{{ media_path }}"
+        number: 1
+        state: present
+        label: gpt
+
+    - name: Create filesystems on lvms and partitions.
+      community.general.filesystem:
+        dev: "{{ item.dev }}"
+        fstype: ext4
+        opts: "-L {{ item.label }} {{ item.reserve }}"
+      loop:
+        - { dev: "{{ media_part }}", label: media, reserve: "-m 0" }
+        - { dev: "/dev/{{ volume_group }}/appdata", label: appdata, reserve: "" }
+        - { dev: "/dev/{{ volume_group }}/storage", label: storage, reserve: "-m 0" }
+
+    - name: Mount filesystems.
+      ansible.posix.mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        fstype: ext4
+        opts: "{{ item.opts }}"
+        state: mounted
+      loop:
+        - { path: /mnt/media, src: LABEL=media, opts: "defaults,nofail" }
+        - { path: /srv/appdata, src: LABEL=appdata, opts: defaults }
+        - { path: /srv/storage, src: LABEL=storage, opts: defaults }
