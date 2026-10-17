@@ -12,6 +12,40 @@
       changed_when: false
       check_mode: false
 
+    - name: Measure selected media size on Unraid.
+      ansible.builtin.raw: >-
+        du -scb {% for title in media_sync %}{{ ('/mnt/user/data/media/' ~ title) | quote }} {% endfor %}
+        | tail -1 | cut -f1
+      delegate_to: zeus
+      register: media_size
+      changed_when: false
+      check_mode: false
+      when: media_sync | length > 0
+
+    - name: Measure space on travel server.
+      ansible.builtin.shell: |
+        set -o pipefail
+        df --output=avail -B1 {{ data_root }} | tail -1
+        du -sb {{ data_root }}/media | cut -f1
+      args:
+        executable: /bin/bash
+      register: travel_space
+      changed_when: false
+      check_mode: false
+
+    - name: Check selection fits on travel server.
+      ansible.builtin.assert:
+        that: needed | int <= (room | int * 0.95)
+        fail_msg: "Selection needs {{ needed_gb }} GB, only {{ room_gb }} GB available for media."
+        success_msg: "Selection {{ needed_gb }} GB of {{ room_gb }} GB; {{ free_gb }} GB free after sync."
+      vars:
+        needed: "{{ media_size.stdout | trim }}"
+        room: "{{ travel_space.stdout_lines[0] | int + travel_space.stdout_lines[1] | int }}"
+        needed_gb: "{{ (needed | int / 1e9) | round(1) }}"
+        room_gb: "{{ (room | int / 1e9) | round(1) }}"
+        free_gb: "{{ ((room | int - needed | int) / 1e9) | round(1) }}"
+      when: media_sync | length > 0
+
     - name: Sync media to travel server.
       ansible.builtin.raw: >-
         rsync -a --no-owner --no-group --chmod=D755,F644

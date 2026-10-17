@@ -3,6 +3,7 @@
 tailscale_authkey: "{{ vault_tailscale_authkey }}"
 app_uid: 1000
 app_gid: 1000
+media_sync_host: 10.2.1.15
 ssh_authorized_keys:
   # Andrew's M4 MBP
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBGe3bM/uyQA3BB99yMlO8J2U98XkBIGzfutR8RYArTW andrew@m4mbp"
