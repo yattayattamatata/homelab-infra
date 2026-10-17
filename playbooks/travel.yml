@@ -49,3 +49,59 @@
         - { path: /mnt/media, src: LABEL=media, opts: "defaults,nofail" }
         - { path: /srv/appdata, src: LABEL=appdata, opts: defaults }
         - { path: /srv/storage, src: LABEL=storage, opts: defaults }
+
+    # Docker
+    - name: Download Docker's package signing key.
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0644"
+
+    - name: Add Docker package repository.
+      ansible.builtin.deb822_repository:
+        name: docker
+        types: deb
+        uris: https://download.docker.com/linux/debian
+        suites: "{{ ansible_facts['distribution_release'] }}"
+        components: stable
+        signed_by: /etc/apt/keyrings/docker.asc
+
+    - name: Install Docker.
+      ansible.builtin.apt:
+        name: [docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin, docker-compose-plugin]
+        update_cache: true
+
+    - name: Ensure Docker service is running and enable it at boot.
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Create docker group and add andrewm for docker without sudo.
+      ansible.builtin.user:
+        name: andrewm
+        groups: docker
+        append: true
+
+    - name: Configure Docker log rotation in settings file.
+      ansible.builtin.copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "10m",
+              "max-file": "3"
+            }
+          }
+        owner: root
+        group: root
+        mode: "0644"
+        validate: dockerd --validate --config-file=%s
+      notify: Restart_docker
+
+  handlers:
+    - name: Restart_docker
+      ansible.builtin.service:
+        name: docker
+        state: restarted
