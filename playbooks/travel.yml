@@ -39,7 +39,7 @@
         opts: "{{ item.opts }}"
         state: mounted
       loop:
-        - { path: /mnt/data, src: LABEL=data, opts: "defaults,nofail" }
+        - { path: "{{ data_root }}", src: LABEL=data, opts: "defaults,nofail" }
         - { path: /srv/appdata, src: LABEL=appdata, opts: defaults }
         - { path: /srv/storage, src: LABEL=storage, opts: defaults }
 

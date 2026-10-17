@@ -8,7 +8,7 @@ media_disk: VK25N28050903576
 media_path: "/dev/disk/by-id/nvme-SPCC_M.2_PCIe_SSD_{{ media_disk }}"
 media_part: "{{ media_path }}-part1"
 # Data drive config
-data_root: /mnt/data
+data_root: /srv/data
 data_dirs:
   - media
   - downloads/torrents/complete
