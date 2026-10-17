@@ -104,7 +104,7 @@
 
     # Docker Compose
     ## Jellyfin
-    - name: Create Jellyfin config and cache folders.
+    - name: Create Jellyfin compose, config, and cache folders.
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
@@ -129,6 +129,32 @@
         project_src: /srv/appdata/jellyfin
         state: present
 
+    ## Kiwix
+    - name: Create Kiwix compose and data folders.
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: andrewm
+        group: andrewm
+        mode: "0755"
+      loop:
+        - /srv/appdata/kiwix
+        - /srv/storage/kiwix
+
+    - name: Create Kiwix compose file.
+      ansible.builtin.template:
+        src: kiwix/compose.yml.j2
+        dest: /srv/appdata/kiwix/compose.yml
+        owner: andrewm
+        group: andrewm
+        mode: "0644"
+
+    - name: Start Kiwix.
+      community.docker.docker_compose_v2:
+        project_src: /srv/appdata/kiwix
+        state: present
+
+  # Handlers
   handlers:
     - name: Restart_docker
       ansible.builtin.service:

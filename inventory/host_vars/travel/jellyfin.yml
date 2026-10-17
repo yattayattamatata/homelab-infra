@@ -1,5 +1,0 @@
-# Jellyfin_version, render_gid
----
-# Jellyfin docker container
-jellyfin_version: "12.2"
-render_gid: 992

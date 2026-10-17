@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+---
+services:
+  kiwix:
+    image: ghcr.io/kiwix/kiwix-serve:{{ kiwix_version }}
+    container_name: kiwix
+    user: "{{ app_uid }}:{{ app_gid }}"
+    volumes:
+      - /srv/storage/kiwix:/data:ro
+    command: "*.zim"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

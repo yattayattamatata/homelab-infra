@@ -1,0 +1,8 @@
+# Service-related variables
+---
+# Image versions (bump these to update)
+jellyfin_version: "12.2"
+kiwix_version: "3.8.2"
+
+# Service-specific settings
+render_gid: 992
