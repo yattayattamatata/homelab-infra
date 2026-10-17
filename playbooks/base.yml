@@ -20,6 +20,13 @@
         mode: "0440"
         validate: visudo -cf %s
 
+    - name: Add public keys.
+      ansible.posix.authorized_key:
+        user: andrewm
+        key: "{{ item }}"
+        state: present
+      loop: "{{ ssh_authorized_keys | default([]) }}"
+
     - name: Disable ssh password, root login, and interactive login.
       ansible.builtin.copy:
         dest: /etc/ssh/sshd_config.d/hardening.conf
