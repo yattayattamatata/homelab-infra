@@ -119,6 +119,16 @@
       changed_when: true
       no_log: true
 
+    - name: Check current Tailscale preferences.
+      ansible.builtin.command: tailscale debug prefs
+      register: tailscale_prefs
+      changed_when: false
+
+    - name: Enable Tailscale auto-updates if not already set.
+      ansible.builtin.command: tailscale set --auto-update
+      when: not (tailscale_prefs.stdout | from_json).AutoUpdate.Apply
+      changed_when: true
+
   handlers:
     - name: Restart_ssh
       ansible.builtin.service:
