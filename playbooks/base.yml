@@ -4,7 +4,7 @@
   become: true
 
   tasks:
-  # User Access
+    # User Access
     - name: Make sure andrewm is in sudo group.
       ansible.builtin.user:
         name: andrewm
@@ -20,8 +20,20 @@
         mode: "0440"
         validate: visudo -cf %s
 
+    - name: Disable ssh password, root login, and interactive login.
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/hardening.conf
+        content: |
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PermitRootLogin no
+        owner: root
+        group: root
+        mode: "0644"
+        validate: /usr/sbin/sshd -t -f %s
+      notify: Restart_ssh
 
-  # Package updates
+    # Package updates
     - name: Update and Upgrade apt packages.
       ansible.builtin.apt:
         update_cache: true
@@ -44,14 +56,14 @@
         mode: "0644"
 
 
-  # Install base tools
+    # Install base tools
     - name: Install base tools.
       ansible.builtin.apt:
         name: [curl, vim, htop, git, rsync, tmux, ncdu]
         state: present
 
 
-  # Time
+    # Time
     - name: Install Chrony for time synchronization.
       ansible.builtin.apt:
         name: chrony
@@ -67,3 +79,10 @@
       community.general.timezone:
         name: UTC
         hwclock: UTC
+
+
+  handlers:
+    - name: Restart_ssh
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
