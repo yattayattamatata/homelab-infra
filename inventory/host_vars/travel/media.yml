@@ -1,0 +1,7 @@
+---
+# Where zeus pushes media. Override with -e when away from home.
+media_sync_host: 10.2.1.15
+
+# Titles to copy from Unraid. Removing a line deletes that title from travel on the next run.
+media_sync:
+  - "movies/Inception (2010) [tmdbid-27205]"

@@ -1,6 +1,6 @@
 ---
 - name: Base setup for all servers.
-  hosts: all
+  hosts: debian
   become: true
 
   tasks:

@@ -1,0 +1,31 @@
+---
+- name: Sync media from Unraid to travel server.
+  hosts: travel_servers
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Check titles exist on Unraid (typo protection).
+      ansible.builtin.raw: test -d {{ ('/mnt/user/data/media/' ~ item) | quote }}
+      loop: "{{ media_sync }}"
+      delegate_to: zeus
+      changed_when: false
+      check_mode: false
+
+    - name: Sync media to travel server.
+      ansible.builtin.raw: >-
+        rsync -a --no-owner --no-group --chmod=D755,F644
+        --itemize-changes --delete --delete-excluded
+        {% for title in media_sync %}--filter={{ ('+ /' ~ (title | regex_escape) ~ '/***') | quote }} {% endfor %}
+        --filter='+ /*/' --filter='- /*/*' --filter='- /*'
+        {{ '--dry-run' if ansible_check_mode else '' }}
+        /mnt/user/data/media/
+        andrewm@{{ media_sync_host }}:{{ data_root }}/media/
+      delegate_to: zeus
+      check_mode: false
+      register: media_rsync
+      changed_when: media_rsync.stdout | trim | length > 0
+
+    - name: List changes.
+      ansible.builtin.debug:
+        var: media_rsync.stdout_lines
