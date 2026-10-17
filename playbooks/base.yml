@@ -59,7 +59,7 @@
     # Install base tools
     - name: Install base tools.
       ansible.builtin.apt:
-        name: [curl, vim, htop, git, rsync, tmux, ncdu]
+        name: [curl, vim, htop, git, rsync, tmux, ncdu, parted]
         state: present
 
 
