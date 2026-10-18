@@ -47,11 +47,21 @@
         free_gb: "{{ ((room | int - needed | int) / 1e9) | round(1) }}"
       when: media_sync | length > 0
 
+    - name: Build rsync filter rules from the title list.
+      ansible.builtin.set_fact:
+        media_filters: "{{ parent_includes + title_includes + season_excludes }}"
+      vars:
+        season_entries: "{{ media_sync | select('search', '^[^/]+/[^/]+/[^/]+$') | list }}"
+        season_parents: "{{ season_entries | map('dirname') | unique | list }}"
+        parent_includes: "{{ season_parents | map('regex_escape') | map('regex_replace', '^(.*)$', '+ /\\1/') | list }}"
+        title_includes: "{{ media_sync | map('regex_escape') | map('regex_replace', '^(.*)$', '+ /\\1/***') | list }}"
+        season_excludes: "{{ season_parents | map('regex_escape') | map('regex_replace', '^(.*)$', '- /\\1/*/') | list }}"
+
     - name: Sync media to travel server.
       ansible.builtin.raw: >-
-        rsync -a --no-owner --no-group --chmod=D755,F644
+        rsync -a --omit-dir-times --no-owner --no-group --chmod=D755,F644
         --itemize-changes --delete --delete-excluded
-        {% for title in media_sync %}--filter={{ ('+ /' ~ (title | regex_escape) ~ '/***') | quote }} {% endfor %}
+        {% for rule in media_filters %}--filter={{ rule | quote }} {% endfor %}
         --filter='+ /*/' --filter='- /*/*' --filter='- /*'
         {{ '--dry-run' if ansible_check_mode else '' }}
         /mnt/user/data/media/
