@@ -12,6 +12,8 @@ ssh_authorized_keys:
 cloudflare_api_token: "{{ vault_cloudflare_api_token }}"
 travel_domain: travel.yattaya.xyz
 acme_email: "{{ vault_acme_email }}"
+cloudflare_zone: yattaya.xyz
+cloudflare_record: "*.travel"
 
 # User IDs
 app_uid: 1000
