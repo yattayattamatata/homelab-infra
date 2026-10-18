@@ -1,0 +1,32 @@
+# blocky: Setup blocky folders, create compose file using template, and start.
+---
+
+- name: Create blocky folder.
+  ansible.builtin.file:
+    path: /srv/appdata/blocky
+    state: directory
+    owner: andrewm
+    group: andrewm
+    mode: "0755"
+
+- name: Create blocky compose file.
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: /srv/appdata/blocky/compose.yml
+    owner: andrewm
+    group: andrewm
+    mode: "0644"
+
+- name: Create blocky config file.
+  ansible.builtin.template:
+    src: config.yml.j2
+    dest: /srv/appdata/blocky/config.yml
+    owner: andrewm
+    group: andrewm
+    mode: "0644"
+  notify: Restart_blocky
+
+- name: Start blocky.
+  community.docker.docker_compose_v2:
+    project_src: /srv/appdata/blocky
+    state: present

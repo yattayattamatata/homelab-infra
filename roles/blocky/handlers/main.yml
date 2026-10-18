@@ -1,0 +1,7 @@
+# Blocky Handler: Restart Blocky.
+---
+
+- name: Restart_blocky
+  community.docker.docker_compose_v2:
+    project_src: /srv/appdata/blocky
+    state: restarted

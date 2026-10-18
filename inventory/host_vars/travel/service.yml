@@ -5,6 +5,7 @@
 jellyfin_version: "12.2"
 kiwix_version: "3.8.2"
 traefik_version: "v3.7.15"
+blocky_version: "v0.29.0"
 
 # Service-specific settings
 render_gid: 992

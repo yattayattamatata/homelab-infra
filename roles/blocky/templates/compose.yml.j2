@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+---
+
+services:
+  blocky:
+    image: ghcr.io/0xerr0r/blocky:{{ blocky_version }}
+    container_name: blocky
+    volumes:
+      - /srv/appdata/blocky/config.yml:/app/config.yml:ro
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "127.0.0.1:4000:4000"
+    restart: unless-stopped

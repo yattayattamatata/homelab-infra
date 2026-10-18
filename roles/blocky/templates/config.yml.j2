@@ -1,0 +1,37 @@
+# {{ ansible_managed }}
+---
+
+upstreams:
+  groups:
+    default:
+      - https://dns.quad9.net/dns-query
+      - https://cloudflare-dns.com/dns-query
+  strategy: parallel_best
+  timeout: 2s
+
+bootstrapDns:
+  - tcp+udp:9.9.9.9
+  - tcp+udp:1.1.1.1
+
+customDNS:
+  mapping:
+    {{ travel_domain }}: {{ lan_ip }}
+
+blocking:
+  denylists:
+    ads:
+      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/light-onlydomains.txt
+  clientGroupsBlock:
+    default:
+      - ads
+  blockType: zeroIp
+  loading:
+    refreshPeriod: 24h
+    strategy: fast
+
+ports:
+  dns: 53
+  http: 4000
+
+log:
+  level: info
