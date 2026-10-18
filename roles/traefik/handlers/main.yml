@@ -1,0 +1,7 @@
+# Traefik Handler: Restart Traefik.
+---
+
+- name: Restart_traefik
+  community.docker.docker_compose_v2:
+    project_src: /srv/appdata/traefik
+    state: restarted

@@ -2,11 +2,20 @@
 ---
 
 tailscale_authkey: "{{ vault_tailscale_authkey }}"
-app_uid: 1000
-app_gid: 1000
-media_sync_host: 10.2.1.15
 ssh_authorized_keys:
   # Andrew's M4 MBP
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBGe3bM/uyQA3BB99yMlO8J2U98XkBIGzfutR8RYArTW andrew@m4mbp"
   # Zeus unraid NAS
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHXBkecRE//S3SOYwYQ7NvMXZ0rHzdbycDmUx6R3083J root@zeus"
+
+# DNS, CF, and LetsEncrypt
+cloudflare_api_token: "{{ vault_cloudflare_api_token }}"
+travel_domain: travel.yattaya.xyz
+acme_email: "{{ vault_acme_email }}"
+
+# User IDs
+app_uid: 1000
+app_gid: 1000
+
+# Media transfer
+media_sync_host: 10.2.1.15

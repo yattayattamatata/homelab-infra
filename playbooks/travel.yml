@@ -7,5 +7,6 @@
   roles:
     - {role: storage, tags: storage }
     - {role: docker, tags: docker }
+    - { role: traefik, tags: traefik }
     - {role: jellyfin, tags: jellyfin }
     - {role: kiwix, tags: kiwix }

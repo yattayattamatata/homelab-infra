@@ -1,0 +1,43 @@
+# Traefik: Reverse proxy with a wildcard certificate.
+---
+
+- name: Create Traefik folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  loop:
+    - /srv/appdata/traefik
+    - /srv/appdata/traefik/certs
+
+- name: Create shared Docker network for apps behind Traefik.
+  community.docker.docker_network:
+    name: proxy
+
+- name: Create Traefik settings file.
+  ansible.builtin.template:
+    src: traefik.yml.j2
+    dest: /srv/appdata/traefik/traefik.yml
+    mode: "0644"
+  notify: Restart_traefik
+
+- name: Create Traefik secrets file.
+  ansible.builtin.template:
+    src: env.j2
+    dest: /srv/appdata/traefik/.env
+    mode: "0600"
+  no_log: true
+  notify: Restart_traefik
+
+- name: Create Traefik compose file.
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: /srv/appdata/traefik/compose.yml
+    mode: "0644"
+
+- name: Start Traefik.
+  community.docker.docker_compose_v2:
+    project_src: /srv/appdata/traefik
+    state: present

@@ -1,0 +1,42 @@
+# {{ ansible_managed }}
+---
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: "{{ travel_domain }}"
+            sans:
+              - "*.{{ travel_domain }}"
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: proxy
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: "{{ acme_email }}"
+      storage: /certs/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+        propagation:
+          delayBeforeChecks: 30s
+          disableChecks: true
+
+log:
+  level: INFO
