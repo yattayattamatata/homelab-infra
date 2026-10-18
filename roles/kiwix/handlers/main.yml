@@ -1,0 +1,7 @@
+# Kiwix Handlers: Restart Kiwix.
+---
+
+- name: Restart_kiwix
+  community.docker.docker_compose_v2:
+    project_src: /srv/appdata/kiwix
+    state: restarted

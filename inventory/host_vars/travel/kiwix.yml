@@ -1,6 +1,0 @@
----
-# Zim files to get for kiwix.
-kiwix_mirror: https://download.kiwix.org/zim
-kiwix_zims:
-  - "wikipedia/wikipedia_en_all_maxi_2026-02.zim"
-  - "stack_exchange/stackoverflow.com_en_all_2023-11.zim"

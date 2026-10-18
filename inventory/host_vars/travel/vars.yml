@@ -1,5 +1,6 @@
 # General (tailscale key, user ID's)
 ---
+
 tailscale_authkey: "{{ vault_tailscale_authkey }}"
 app_uid: 1000
 app_gid: 1000

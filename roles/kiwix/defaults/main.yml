@@ -1,0 +1,19 @@
+# Variables for Kiwix.
+---
+
+kiwix_mirror: https://download.kiwix.org/zim
+kiwix_zims:
+  - "wikipedia/wikipedia_en_all_maxi_2026-02.zim"
+  - "wiktionary/wiktionary_en_all_nopic_2026-02.zim"
+  - "wikiquote/wikiquote_en_all_nopic_2026-01.zim"
+  - "wikivoyage/wikivoyage_en_all_maxi_2025-12.zim"
+  - "gutenberg/gutenberg_en_lcc-pr_2026-03.zim"
+  - "gutenberg/gutenberg_en_lcc-ps_2026-03.zim"
+  - "ifixit/ifixit_en_all_2025-12.zim"
+  - "stack_exchange/stackoverflow.com_en_all_2023-11.zim"
+  - "stack_exchange/serverfault.com_en_all_2026-02.zim"
+  - "stack_exchange/superuser.com_en_all_2026-02.zim"
+  - "stack_exchange/unix.stackexchange.com_en_all_2026-02.zim"
+  - "other/appropedia_en_all_maxi_2026-02.zim"
+  - "other/crashcourse_en_all_2026-02.zim"
+  - "other/zimgit-medicine_en_2024-08.zim"

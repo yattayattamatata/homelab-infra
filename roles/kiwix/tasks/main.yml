@@ -11,6 +11,7 @@
   loop:
     - /srv/appdata/kiwix
     - /srv/storage/kiwix
+    - /srv/storage/kiwix/.tmp
 
 - name: Create Kiwix compose file.
   ansible.builtin.template:
@@ -24,3 +25,41 @@
   community.docker.docker_compose_v2:
     project_src: /srv/appdata/kiwix
     state: present
+
+- name: Check which ZIM files are already downloaded.
+  ansible.builtin.stat:
+    path: "/srv/storage/kiwix/{{ item | basename }}"
+    get_checksum: false
+  loop: "{{ kiwix_zims }}"
+  register: kiwix_zim_files
+
+- name: Download missing ZIM files.
+  ansible.builtin.get_url:
+    url: "{{ kiwix_mirror }}/{{ item.item }}"
+    dest: "/srv/storage/kiwix/{{ item.item | basename }}"
+    checksum: "sha256:{{ kiwix_mirror }}/{{ item.item }}.sha256"
+    tmp_dest: /srv/storage/kiwix/.tmp
+    owner: andrewm
+    group: andrewm
+    mode: "0644"
+  loop: "{{ kiwix_zim_files.results }}"
+  loop_control:
+    label: "{{ item.item | basename }}"
+  when: not item.stat.exists
+  notify: Restart_kiwix
+
+- name: Find ZIM files on the server.
+  ansible.builtin.find:
+    paths: /srv/storage/kiwix
+    patterns: "*.zim"
+  register: kiwix_found
+
+- name: Remove ZIM files that are no longer listed.
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ kiwix_found.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when: item.path | basename not in (kiwix_zims | map('basename'))
+  notify: Restart_kiwix
