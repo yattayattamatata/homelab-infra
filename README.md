@@ -14,11 +14,14 @@ My homelab, set up with Ansible. I'm using this repo to learn infrastructure as 
 - [x] Base setup: updates, SSH security, time sync, Tailscale
 - [x] Storage: separate drives for apps and media
 - [x] Docker
-- [x] Kiwix (offline Wikipedia and reference sites)
+- [x] Jellyfin, with settings copied from my home server and hardware transcoding
+- [x] Kiwix, with the list of offline libraries kept in this repo
 - [x] Copy selected media from my home server with a simple list
-- [ ] Jellyfin: copy settings from my home server, turn on hardware transcoding
-- [ ] HTTPS and nice web addresses for each app
-- [ ] Local DNS and a dashboard page
+- [x] HTTPS and nice web addresses for each app (Traefik)
+- [x] DNS record kept up to date by Ansible
+- [x] Local DNS with light ad blocking that also works offline (Blocky)
+- [ ] Travel router setup
+- [ ] Dashboard page
 - [ ] Rebuild from scratch to prove the repo has everything
 
 ### Cluster
@@ -32,10 +35,10 @@ My homelab, set up with Ansible. I'm using this repo to learn infrastructure as 
 ## Layout
 
 ```
-inventory/            my machines and their settings (secrets are encrypted)
-playbooks/            the steps Ansible runs
-playbooks/templates/  config files that get filled in for each machine
-docs/                 notes and decisions
+inventory/   my machines and their settings (secrets are encrypted)
+playbooks/   which roles each machine gets, plus one-off jobs like media sync
+roles/       one folder per piece of the setup (storage, docker, traefik, blocky, jellyfin, kiwix)
+docs/        notes and runbooks
 ```
 
 ## Common tasks
@@ -44,9 +47,23 @@ docs/                 notes and decisions
 |---|---|
 | Apply base setup | `ansible-playbook playbooks/base.yml` |
 | Apply travel server setup | `ansible-playbook playbooks/travel.yml` |
+| Apply just one part | `ansible-playbook playbooks/travel.yml --tags kiwix` |
 | Edit media list | `vedit inventory/host_vars/travel/media.yml` |
 | Edit secrets | `vedit inventory/host_vars/travel/vault.yml` |
 | Preview media sync | `ansible-playbook playbooks/media-sync.yml --check` |
 | Sync media | `ansible-playbook playbooks/media-sync.yml` |
+| Turn ad blocking off | `ssh travel 'docker exec blocky /app/blocky blocking disable'` |
+| Turn ad blocking on | `ssh travel 'docker exec blocky /app/blocky blocking enable'` |
+| Check why a site is blocked | `ssh travel 'docker logs blocky 2>&1 \| grep <site>'` |
 
 `vedit` is my shell alias for `EDITOR="codium --wait" ansible-vault edit`. It opens encrypted files in VSCodium and encrypts them again when I close the tab.
+
+## How names work
+
+Each app has its own address, like `jellyfin.travel.yattaya.xyz`, with a real HTTPS certificate.
+
+- **On the travel network:** Blocky on the server answers with the server's local address, even with no internet.
+- **At home:** my home router points the names at the server's local address.
+- **Anywhere else:** Cloudflare points the names at the server's Tailscale address.
+
+If something with DNS breaks, the first step is turning ad blocking off (see above).
