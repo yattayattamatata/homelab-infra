@@ -1,0 +1,46 @@
+# {{ ansible_managed }}
+---
+
+- resources:
+    label: Travel
+    cpu: true
+    memory: true
+    cputemp: true
+    uptime: true
+    expanded: false
+    units: metric
+    refresh: 3000
+
+- resources:
+    label: Apps
+    expanded: false
+    disk:
+      - /mnt/appdata
+
+- resources:
+    label: Storage
+    expanded: false
+    disk:
+      - /mnt/storage
+
+- resources:
+    label: Data
+    expanded: false
+    disk:
+      - /mnt/data
+
+- datetime:
+    text_size: xl
+    format:
+      timeStyle: short
+      hourCycle: h23
+
+- openmeteo:
+    label: GER
+    latitude: 49.61670
+    longitude: 7.33333
+    timezone: Europe/Berlin
+    units: imperial
+    cache: 5
+    format:
+      maximumFractionDigits: 0

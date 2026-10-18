@@ -1,0 +1,52 @@
+# Homepage: dashboard with config files managed from the repo.
+---
+
+- name: Create Homepage folders.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: andrewm
+    group: andrewm
+    mode: "0755"
+  loop:
+    - /srv/appdata/homepage
+    - /srv/appdata/homepage/config
+    - /srv/appdata/homepage/images
+
+- name: Create Homepage config files.
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/srv/appdata/homepage/config/{{ item }}"
+    owner: andrewm
+    group: andrewm
+    mode: "0600"
+  loop:
+    - settings.yaml
+    - services.yaml
+    - widgets.yaml
+    - bookmarks.yaml
+  no_log: true
+
+- name: Copy Homepage images.
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /srv/appdata/homepage/images/
+    owner: andrewm
+    group: andrewm
+    mode: "0644"
+  loop:
+    - alena-aenami-out-of-time-1080p.jpg
+    - favicondynamic2.svg
+
+- name: Create Homepage compose file.
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: /srv/appdata/homepage/compose.yml
+    owner: andrewm
+    group: andrewm
+    mode: "0644"
+
+- name: Start Homepage.
+  community.docker.docker_compose_v2:
+    project_src: /srv/appdata/homepage
+    state: present

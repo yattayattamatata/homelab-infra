@@ -1,0 +1,29 @@
+# {{ ansible_managed }}
+---
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:{{ homepage_version }}
+    container_name: homepage
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: "homepage.{{ travel_domain }}"
+      PUID: "{{ app_uid }}"
+      PGID: "{{ app_gid }}"
+    volumes:
+      - /srv/appdata/homepage/config:/app/config
+      - /srv/appdata/homepage/images:/app/public/images:ro
+      - /srv/data:/mnt/data:ro
+      - /srv/storage:/mnt/storage:ro
+      - /srv/appdata:/mnt/appdata:ro
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homepage.rule=Host(`homepage.{{ travel_domain }}`)
+      - traefik.http.routers.homepage.entrypoints=websecure
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true

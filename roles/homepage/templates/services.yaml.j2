@@ -1,0 +1,84 @@
+# {{ ansible_managed }}
+---
+
+- Schedule:
+    - Calendar:
+        widget:
+          type: calendar
+          firstDayInWeek: sunday
+          view: monthly
+          maxEvents: 10
+          showTime: true
+          timezone: America/Chicago
+          integrations:
+            - type: ical
+              url: "{{ homepage_work_ical }}"
+              name: Work
+              color: red
+              params:
+                showName: true
+            - type: ical
+              url: https://calendar.google.com/calendar/ical/en.usa%23holiday%40group.v.calendar.google.com/public/basic.ics
+              name: Holidays
+              color: emerald
+              params:
+                showName: true
+    - Agenda:
+        widget:
+          type: calendar
+          view: agenda
+          maxEvents: 10
+          showTime: true
+          previousDays: 3
+          integrations:
+            - type: ical
+              url: "{{ homepage_work_ical }}"
+              name: Work
+              color: red
+              params:
+                showName: true
+            - type: ical
+              url: https://calendar.google.com/calendar/ical/en.usa%23holiday%40group.v.calendar.google.com/public/basic.ics
+              name: Holidays
+              color: emerald
+              params:
+                showName: true
+
+- Devices:
+    - On the Go Again:
+        icon: glinet-dark.svg
+        href: http://10.2.1.1
+        description: Router Interface
+
+    - Blocky:
+        icon: blocky.png
+        description: DNS & Ad Blocking
+        siteMonitor: http://blocky:4000/api/blocking/status
+        statusStyle: dot
+        widget:
+          type: customapi
+          url: http://blocky:4000/api/blocking/status
+          mappings:
+            - field: enabled
+              label: Ad Blocking
+
+- Media:
+    - Jellyfin:
+        icon: jellyfin.svg
+        href: "https://jellyfin.{{ travel_domain }}"
+        description: Media Server
+        siteMonitor: http://jellyfin:8096
+        statusStyle: dot
+        widget:
+          type: jellyfin
+          url: http://jellyfin:8096
+          key: "{{ homepage_jellyfin_key }}"
+          version: 2
+          enableBlocks: true
+
+    - Kiwix:
+        icon: kiwix.png
+        href: "https://kiwix.{{ travel_domain }}"
+        description: Offline Internet
+        siteMonitor: http://kiwix:8080
+        statusStyle: dot

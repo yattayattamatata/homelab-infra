@@ -11,3 +11,4 @@
     - { role: blocky, tags: blocky }
     - { role: jellyfin, tags: jellyfin }
     - { role: kiwix, tags: kiwix }
+    - { role: homepage, tags: homepage }

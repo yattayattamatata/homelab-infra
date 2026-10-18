@@ -15,6 +15,10 @@ acme_email: "{{ vault_acme_email }}"
 cloudflare_zone: yattaya.xyz
 cloudflare_record: "*.travel"
 
+# Homepage APIs
+homepage_work_ical: "{{ vault_homepage_work_ical }}"
+homepage_jellyfin_key: "{{ vault_homepage_jellyfin_key }}"
+
 # User IDs
 app_uid: 1000
 app_gid: 1000
