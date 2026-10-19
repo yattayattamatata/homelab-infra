@@ -20,7 +20,7 @@ My homelab, set up with Ansible. I'm using this repo to learn infrastructure as 
 - [x] HTTPS and nice web addresses for each app (Traefik)
 - [x] DNS record kept up to date by Ansible
 - [x] Local DNS with light ad blocking that also works offline (Blocky)
-- [ ] Travel router setup
+- [x] Travel router setup
 - [x] Dashboard page
 - [ ] Rebuild from scratch to prove the repo has everything
 
