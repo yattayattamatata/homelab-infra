@@ -4,7 +4,7 @@ My homelab, set up with Ansible. I'm using this repo to learn infrastructure as 
 
 ## Machines
 
-**Travel server** (in use): a small mini PC running Debian that I take with me when I travel. It has my movies, shows, and audiobooks, plus offline copies of Wikipedia and other reference sites, so it works without internet. I can reach it from anywhere through Tailscale.
+**Travel server** (in use): a small mini PC running Debian that I take with me when I travel. It has my movies, shows, audiobooks, and podcasts, plus offline copies of Wikipedia and other reference sites, so it works without internet. I can reach it from anywhere through Tailscale. It travels with a GL.iNet Beryl router, so all my devices join one network that works the same everywhere, with or without internet.
 
 **Cluster** (planned for spring 2027): three Lenovo mini PCs that I'll set up as a Kubernetes cluster with k3s. I want to learn how to run apps that keep working when one machine goes down.
 
@@ -37,7 +37,7 @@ My homelab, set up with Ansible. I'm using this repo to learn infrastructure as 
 ```
 inventory/   my machines and their settings (secrets are encrypted)
 playbooks/   which roles each machine gets, plus one-off jobs like media sync
-roles/       one folder per piece of the setup (storage, docker, traefik, blocky, jellyfin, kiwix)
+roles/       one folder per piece of the setup (storage, docker, traefik, blocky, jellyfin, kiwix, homepage)
 docs/        notes and runbooks
 ```
 
@@ -52,6 +52,8 @@ docs/        notes and runbooks
 | Edit secrets | `vedit inventory/host_vars/travel/vault.yml` |
 | Preview media sync | `ansible-playbook playbooks/media-sync.yml --check` |
 | Sync media | `ansible-playbook playbooks/media-sync.yml` |
+| Open the dashboard | `https://homepage.travel.yattaya.xyz` |
+| Shut down the travel server | `ssh travel 'sudo poweroff'` (or press the power button once) |
 | Turn ad blocking off | `ssh travel 'docker exec blocky /app/blocky blocking disable'` |
 | Turn ad blocking on | `ssh travel 'docker exec blocky /app/blocky blocking enable'` |
 | Check why a site is blocked | `ssh travel 'docker logs blocky 2>&1 \| grep <site>'` |
@@ -66,4 +68,4 @@ Each app has its own address, like `jellyfin.travel.yattaya.xyz`, with a real HT
 - **At home:** my home router points the names at the server's local address.
 - **Anywhere else:** Cloudflare points the names at the server's Tailscale address.
 
-If something with DNS breaks, the first step is turning ad blocking off (see above).
+If something with DNS breaks, the first step is turning ad blocking off (see above). The rest is in `docs/dns.md`.
