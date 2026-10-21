@@ -139,6 +139,11 @@
       when: not (tailscale_prefs.stdout | from_json).AutoUpdate.Apply
       changed_when: true
 
+    - name: Keep Tailscale from managing this server's DNS.
+      ansible.builtin.command: tailscale set --accept-dns=false
+      when: (tailscale_prefs.stdout | from_json).CorpDNS
+      changed_when: true
+
     - name: Get this server's Tailscale IP.
       ansible.builtin.command: tailscale ip -4
       register: tailscale_ip
