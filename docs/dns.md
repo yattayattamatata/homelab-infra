@@ -89,6 +89,8 @@ At home, testing from my Mac doesn't tell me much. My home network grabs all DNS
 
 **Can't reach it by name remotely after a rebuild.** The Tailscale IP probably changed. Run `ansible-playbook playbooks/base.yml` to update Cloudflare.
 
+**Apps can’t reach the internet, but the server can.** Containers can’t use Tailscale’s DNS (100.100.100.100). Docker is set to use Blocky first, then Quad9 (daemon.json in the docker role). Test with ssh travel 'docker exec homepage nslookup debian.org'
+
 ## Beryl setup (GL-MT1300)
 
 Firmware 4.3.25. GL.iNet doesn't update this model anymore. All of this is set by hand, so I keep this list matching the router. Everything stays after a reboot.
